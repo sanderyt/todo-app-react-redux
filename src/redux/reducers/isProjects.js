@@ -3,7 +3,7 @@ const isProjectsReducer = (state = {}, action) => {
         case 'GET_PROJECTS':
             return {
                 ...state,
-                state : action.payload,
+                projects : action.payload,
             }
         default:
             return state;

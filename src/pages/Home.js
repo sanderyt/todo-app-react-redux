@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Fire from '../config/Firebase';
 import Modal from '../components/Modal';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Home = () => {
 
@@ -8,6 +9,9 @@ const Home = () => {
     const [newTask, setNewTask] = useState(false);
     const [projectName, setProjectName] = useState("");
     const [addedProject, setAddedProject] = useState(false);
+
+    const user = useSelector(store => store.isUser.user);
+    const userProjects = useSelector(store => store.isProjects.projects);
 
     const inputHandler = (event) => {
         setProjectName(event.target.value);
@@ -24,7 +28,7 @@ const Home = () => {
         .collection("projects")
         .add({
             projectName: projectName,
-            userId: "sander"
+            userId: user.uid,
         })
         .then(() => console.log('succes'))
         .catch(error => console.error("Error adding document: ", error))
@@ -35,15 +39,17 @@ const Home = () => {
     return (
         <div className="content">
             <div className="content__sidebar">
-                <h2>Projects</h2>
-                <p>No projects to show...</p>
+                <p>Welcome, <b>{user&& user.email}</b></p>
+                <h3>Projects</h3>
+                <div className="content__sidebar__projects">
+                </div> 
                 <button className="btn" onClick={() => setNewProject(!newProject)}>Add new project</button>
                 <h2>Tasks</h2>
                 <p>No tasks to show</p>
                 <button className="btn" onClick={() => setNewTask(!newTask)}>Add new task</button>
             </div>
             <div className="content__todos">
-                <h2>To-do list</h2>
+                <h3>Tasks for project "PROJECT X"</h3>
             </div>
 
             {newProject&&

@@ -6,7 +6,7 @@ import Login from './components/Login';
 import Home from './pages/Home';
 
 import { connect } from 'react-redux';
-import { logOut, logIn, getUser, removeUser } from './redux/actions';
+import { logOut, logIn, getUser, removeUser, getProjects } from './redux/actions';
 
 import './App.scss';
 
@@ -17,13 +17,7 @@ class App extends Component {
       if (user) {
         this.props.logIn();
         this.props.getUser(user);
-        //get projects here from firebase
-        Fire
-        .firestore()
-        .collection("projects")
-        .get()
-        .then((doc) => console.log('succes'))
-        .catch(error => console.error("Error adding document: ", error))
+        this.props.getProjects();
       } else {
         this.props.logOut();
         this.props.removeUser();
@@ -61,6 +55,7 @@ const mapDispatchToProps = () => {
     logOut,
     getUser,
     removeUser,
+    getProjects
   }
 }
 

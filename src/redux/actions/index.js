@@ -1,3 +1,5 @@
+import Fire from '../../config/Firebase';
+
 //Login-out actions
 export const logIn = () => {
     return {
@@ -27,7 +29,14 @@ export const removeUser = () => {
 
 //Get project actions
 export const getProjects = () => {
+    let projects = [];
+    Fire.firestore().collection('projects').get().then((snapshot) => {
+        snapshot.docs.forEach(doc => {
+        projects.push(doc.data());
+        })
+    })
     return {
         type: 'GET_PROJECTS',
+        payload: projects,
     };
 };
