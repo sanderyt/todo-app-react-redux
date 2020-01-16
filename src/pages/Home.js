@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Fire from '../config/Firebase';
 import Modal from '../components/Modal';
+import TaskItem from '../components/TaskItem';
 import { useDispatch, useSelector } from 'react-redux';
 
 const Home = () => {
@@ -49,7 +50,10 @@ const Home = () => {
                 <button className="btn" onClick={() => setNewTask(!newTask)}>Add new task</button>
             </div>
             <div className="content__todos">
-                <h3>Tasks for project "PROJECT X"</h3>
+                <h3>All your tasks</h3>
+                <TaskItem task="Borden afwassen" />
+                <TaskItem task="Kleren wassen" />
+                <TaskItem task="Schoonmaken" />
             </div>
 
             {newProject&&
