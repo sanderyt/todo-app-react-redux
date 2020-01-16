@@ -1,33 +1,32 @@
 import React, { Component } from 'react';
-//Components
+import Fire from './config/Firebase'
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import Login from './components/Login';
 import Home from './pages/Home';
-//Redux
+
 import { connect } from 'react-redux';
-import { logOut, logIn } from './redux/actions';
-//FB
-import Fire from './config/Firebase'
-//SCSS
+import { logOut, logIn, getUser, removeUser } from './redux/actions';
+
 import './App.scss';
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      user: {},
-    }
-  }
 
   authListener() {
     Fire.auth().onAuthStateChanged((user) => {
       if (user) {
-        this.setState({user})
         this.props.logIn();
+        this.props.getUser(user);
+        //get projects here from firebase
+        Fire
+        .firestore()
+        .collection("projects")
+        .get()
+        .then((doc) => console.log('succes'))
+        .catch(error => console.error("Error adding document: ", error))
       } else {
-        this.setState({user: null}) 
         this.props.logOut();
+        this.props.removeUser();
       }
     })
   }
@@ -40,8 +39,7 @@ class App extends Component {
     return (
     <div className="App">
       <Header />
-      <h1>Hi</h1>
-        {this.state.user ? 
+        {this.props.isLogged ? 
           (<Home />)
         : (<Login />)}
       <Footer />
@@ -52,14 +50,17 @@ class App extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    isLogged: state.isLogged
+    isLogged: state.isLogged,
+    user: state.isUser,
   }
 }
 
 const mapDispatchToProps = () => {
   return {
     logIn,
-    logOut
+    logOut,
+    getUser,
+    removeUser,
   }
 }
 

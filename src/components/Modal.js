@@ -1,7 +1,7 @@
 import React from 'react';
 import CloseIcon from './CloseIcon';
 
-const Modal = (props, close) => {
+const Modal = (props) => {
     return (
         <div className="modal">
             <div className="modal__container">

@@ -4,9 +4,6 @@ import Fire from '../config/Firebase';
 import Modal from './Modal';
 import LoadingSpinner from './LoadingSpinner';
 
-import { useDispatch } from 'react-redux';
-import { logIn } from '../redux/actions';
-
 const Login = ({clicked, register}) => {
 
     const [userName, setUsername] = useState('');
@@ -15,8 +12,6 @@ const Login = ({clicked, register}) => {
     const [errorLogin, setErrorLogin] = useState(null);
     const [errorRegister, setErrorRegister] = useState(null);
     const [registerClick, setRegisterClick] = useState(false);
-
-    const dispatch = useDispatch();
 
     const handleChangeUser = (event) => {
         setUsername(event.target.value);

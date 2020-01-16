@@ -12,8 +12,22 @@ export const logOut = () => {
 };
 
 //Get user actions
-export const getUser = () => {
+export const getUser = (user) => {
     return {
-        type: 'GET_USER'
+        type: 'GET_USER',
+        payload: user,
+    };
+};
+
+export const removeUser = () => {
+    return {
+        type: 'REMOVE_USER',
+    };
+};
+
+//Get project actions
+export const getProjects = () => {
+    return {
+        type: 'GET_PROJECTS',
     };
 };

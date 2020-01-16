@@ -3,9 +3,10 @@ import Fire from '../../config/Firebase';
 
 import { useSelector } from 'react-redux';
 
-const Header = (props) => {
+const Header = () => {
 
     const isLogged = useSelector(state => state.isLogged);
+    const userEmail = useSelector(state => state.isUser);
 
     const signOut = () => {
         Fire.auth().signOut();
@@ -18,7 +19,7 @@ const Header = (props) => {
             </div>
             {isLogged&&
             <div className="header__logout">
-                <p>Welcome, user!</p>
+                <p>Welcome, {userEmail.email}</p>
                 <button onClick={signOut} className="btn btn--logout">Logout</button>
             </div>
             }
