@@ -20,7 +20,7 @@ const Header = () => {
             {isLogged&&
             <div className="header__logout">
                 Search for task:<input type="text" /><button className="btn btn--logout">Search</button>
-                <button className="btn btn--logout">Settings</button>
+                <button className="btn btn--logout"><i class="fas fa-sliders-h"></i> Settings</button>
                 <button onClick={signOut} className="btn btn--logout">Logout</button>
             </div>
             }

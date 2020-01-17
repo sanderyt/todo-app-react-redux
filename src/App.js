@@ -15,9 +15,8 @@ class App extends Component {
   authListener() {
     Fire.auth().onAuthStateChanged((user) => {
       if (user) {
-        this.props.logIn();
         this.props.getUser(user);
-        this.props.getProjects();
+        this.props.logIn();
       } else {
         this.props.logOut();
         this.props.removeUser();
@@ -55,7 +54,6 @@ const mapDispatchToProps = () => {
     logOut,
     getUser,
     removeUser,
-    getProjects
   }
 }
 
