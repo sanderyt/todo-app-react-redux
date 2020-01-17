@@ -13,6 +13,7 @@ const Home = () => {
     const [newTask, setNewTask] = useState(false);
     const [addedProject, setAddedProject] = useState(false);
     const [projectName, setProjectName] = useState("");
+    const [selectedProject, setSelectedProject] = useState("");
 
     const dispatch = useDispatch();
     const user = useSelector(store => store.isUser.user);
@@ -36,6 +37,7 @@ const Home = () => {
         .firestore()
         .collection("projects")
         .add({
+            projectId: "1",
             projectName: projectName,
             userId: user.uid,
         })
@@ -43,6 +45,13 @@ const Home = () => {
         .catch(error => console.error("Error adding document: ", error))
         setAddedProject(true)
         dispatch(fetchProjects(user.uid));
+    }
+
+    const deleteProject = () => {
+        //delete project vanuit firebase met projectid
+        console.log("project verwijderd");
+
+        //dispatch fetch projects
     }
 
     return (
@@ -61,7 +70,7 @@ const Home = () => {
                         <LoadingSpinner />
                          : 
                          projects.projects.map((el) => {
-                             return <ProjectName name={el.projectName} />
+                             return <ProjectName name={el.projectName} delete={deleteProject}/>
                          })}
                     </div>
                 </div> 
