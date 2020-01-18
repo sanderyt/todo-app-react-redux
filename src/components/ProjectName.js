@@ -6,9 +6,9 @@ const ProjectName = (props) => {
 
     const [deleteClicked, setDeleteClicked] = useState(false);
 
-    const deleteHandler = () => {
-        setDeleteClicked(true);
-        props.delete();
+    const deleteHandler = (projectId) => {
+        setDeleteClicked(false);
+        props.delete(projectId);
     }
     return (
         <div className="project-name">
@@ -16,11 +16,11 @@ const ProjectName = (props) => {
             {props.name}
             </div>
             <div className="project-name__delete">
-                <FontAwesomeIcon icon={faTrash} onClick={deleteHandler} />
+                <FontAwesomeIcon icon={faTrash} onClick={() => setDeleteClicked(true)} />
                 {deleteClicked&&
                 <div className="project-name__delete--box">
-                    <p>Are you sure?</p>
-                    <button className="btn btn--delete">Yes</button>
+                    <p>Delete "{props.name}"?</p>
+                    <button className="btn btn--delete" onClick={() => deleteHandler(props.docId)}>Yes</button>
                     <button className="btn btn--keep" onClick={() => setDeleteClicked(false)}>No</button>
                 </div>}
             </div>

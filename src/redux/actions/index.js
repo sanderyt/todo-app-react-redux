@@ -56,7 +56,7 @@ export const fetchProjects = (userid) => {
         Fire.firestore().collection('projects').where("userId", "==", userid).get()
         .then((snapshot) => {
             snapshot.docs.forEach(doc => {
-                projects.push(doc.data())
+                projects.push({ ...doc.data(), docId: doc.id })
             })
         dispatch(fetchProjectsSuccess(projects))
         })
@@ -65,5 +65,3 @@ export const fetchProjects = (userid) => {
         })
     }
 }
-
-

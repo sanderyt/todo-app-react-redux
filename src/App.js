@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import Fire from './config/Firebase'
-import Header from './components/layout/Header';
-import Footer from './components/layout/Footer';
-import Login from './components/Login';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import Login from './pages/Login';
 import Home from './pages/Home';
 
 import { connect } from 'react-redux';
-import { logOut, logIn, getUser, removeUser, getProjects } from './redux/actions';
+import { logOut, logIn, getUser, removeUser } from './redux/actions';
 
 import './App.scss';
 

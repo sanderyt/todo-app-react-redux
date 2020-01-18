@@ -4,6 +4,8 @@ import Modal from '../components/Modal';
 import LoadingSpinner from '../components/LoadingSpinner';
 import TaskItem from '../components/TaskItem';
 import ProjectName from '../components/ProjectName';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faFolderPlus, faTasks } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProjects } from '../redux/actions';
 
@@ -21,7 +23,7 @@ const Home = () => {
 
     useEffect(() => {
         dispatch(fetchProjects(user.uid));
-    },[]);
+    },[dispatch, user.uid]);
 
     const inputHandler = (event) => {
         setProjectName(event.target.value);
@@ -32,37 +34,38 @@ const Home = () => {
         setAddedProject(false)
     }
 
-    const postNewProject = () => {
+    const postProject = () => {
         Fire
         .firestore()
         .collection("projects")
         .add({
-            projectId: "1",
             projectName: projectName,
             userId: user.uid,
         })
-        .then(() => console.log('succes'))
+        .then()
         .catch(error => console.error("Error adding document: ", error))
         setAddedProject(true)
         dispatch(fetchProjects(user.uid));
     }
 
-    const deleteProject = () => {
-        //delete project vanuit firebase met projectid
-        console.log("project verwijderd");
+    const deleteProject = (projectId) => {
+        Fire.firestore().collection('projects').doc(projectId).delete();
+        dispatch(fetchProjects(user.uid));
+    }
 
-        //dispatch fetch projects
+    const postTask = () => {
+
+    }
+
+    const deleteTask = () => {
+
     }
 
     return (
         <div className="content">
             <div className="content__sidebar">
                 <p>Welcome, <b>{user&& user.email}</b></p>
-                <h3>Filter tasks</h3>
-                <p>By priority:</p>
-                <p>By status:</p>
-                <p>By project:</p>
-                <button className="btn" onClick={() => setNewTask(!newTask)}>Add new task</button>
+                <button className="btn btn--green" onClick={() => setNewTask(!newTask)}><FontAwesomeIcon icon={faPlus} /> Add new task</button>
                 <h3>Projects</h3>
                 <div className="content__sidebar__projects">
                     <div>
@@ -70,14 +73,14 @@ const Home = () => {
                         <LoadingSpinner />
                          : 
                          projects.projects.map((el) => {
-                             return <ProjectName name={el.projectName} delete={deleteProject}/>
+                             return <ProjectName name={el.projectName} docId={el.docId} delete={deleteProject}/>
                          })}
                     </div>
                 </div> 
-                <button className="btn" onClick={() => setNewProject(!newProject)}>Add new project</button>
+                <button className="btn btn--green" onClick={() => setNewProject(!newProject)}><FontAwesomeIcon icon={faFolderPlus} /> Add new project</button>
             </div>
             <div className="content__todos">
-                <h3>All your tasks</h3>
+                <h3><FontAwesomeIcon icon={faTasks} /> All your tasks</h3>
                 <TaskItem task="Borden afwassen" />
                 <TaskItem task="Kleren wassen" />
                 <TaskItem task="Schoonmaken" />
@@ -93,16 +96,27 @@ const Home = () => {
                 :
                 <div>
                 <b>Project name: </b><input type="text" onChange={inputHandler}/><br />
-                <button className="btn" onClick={postNewProject}>Create project</button>
+                <button className="btn" onClick={postProject}>Create project</button>
                 </div>}
             </Modal>}
 
             {newTask&&
             <Modal title="Create new task" close={() => setNewTask(!newTask)}>
                 <b>Task: </b><input type="text" /><br />
-                <b>For project: </b><input type="text" /><br />
-                <b>Priority:</b> <input type="text" /><br />
-                <b>Due by: <input type="text" /><br /></b>
+                <b>For project:</b>
+                    <select>
+                        {projects.projects.map((project) => {
+                            return <option value={project.projectName}>{project.projectName}</option>
+                        })}
+                    </select><br />
+                <b>Priority:</b>
+                <select>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+                <br />
+                <b>Due by: <input type="date" name="due" /><br /></b>
                 <b>Description: </b><input type="text" /><br />
                 <button className="btn">Create task</button>
             </Modal>}
