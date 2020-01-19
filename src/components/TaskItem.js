@@ -14,9 +14,9 @@ const TaskItem = (props) => {
     }
 
     return (
-        <div className="task-item" onClick={props.click}>
+        <div className={props.archived ? "task-item--done" : "task-item"} onClick={props.click}>
             <div className="task-item__check">
-                <input type="checkbox" id="horns" name="horns" />
+                <input type="checkbox" id="horns" name="horns" defaultChecked={props.archived} onChange={props.complete} />
             </div>
             <div className="task-item__name">
                 {props.task}

@@ -95,8 +95,8 @@ const Home = () => {
         dispatch(fetchTasks(user.uid));
     }
 
-    const changeTask = () => {
-        
+    const completeTask = () => {
+        console.log('completed');
     }
 
     const deleteTask = (taskId) => {
@@ -143,7 +143,9 @@ const Home = () => {
                                 date={el.date} 
                                 priority={el.priority} 
                                 project={el.projectId} 
-                                delete={deleteTask} 
+                                archived={el.archived}
+                                delete={deleteTask}
+                                complete={completeTask} 
                             />
                     })}
             </div>
