@@ -55,8 +55,13 @@ const Home = () => {
     }
 
     const deleteProject = (projectId) => {
-        Fire.firestore().collection('projects').doc(projectId).delete();
-        dispatch(fetchProjects(user.uid));
+        Fire.firestore().collection('projects').doc(projectId).delete().then(() => {
+            dispatch(fetchProjects(user.uid));
+        })
+        .catch((error) => {
+            console.error("Error removing document: ", error);
+        })
+
         //also have to delete all tasks related to this project
     }
 
@@ -95,8 +100,12 @@ const Home = () => {
     }
 
     const deleteTask = (taskId) => {
-        Fire.firestore().collection('tasks').doc(taskId).delete();
-        dispatch(fetchTasks(user.uid));
+        Fire.firestore().collection('tasks').doc(taskId).delete().then(() => {
+            dispatch(fetchTasks(user.uid));
+        })
+        .catch((error) => {
+            console.error("Error removing document: ", error);
+        })
     }
 
     return (
