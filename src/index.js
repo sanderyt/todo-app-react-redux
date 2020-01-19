@@ -6,6 +6,7 @@ import { createStore, applyMiddleware } from 'redux';
 import allReducers from './redux/reducers';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
+import './styles/main.scss'
 
 const createStoreWithMiddleWare = applyMiddleware(thunk)(createStore);
 const store = createStoreWithMiddleWare(allReducers, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());

@@ -7,24 +7,30 @@ import ProjectName from '../components/ProjectName';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faFolderPlus, faTasks } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchProjects } from '../redux/actions';
+import { fetchProjects, fetchTasks } from '../redux/actions';
 
 const Home = () => {
 
     const [newProject, setNewProject] = useState(false);
-    const [newTask, setNewTask] = useState(false);
+    const [addTask, setAddTask] = useState(false);
     const [addedProject, setAddedProject] = useState(false);
     const [projectName, setProjectName] = useState("");
-    const [selectedProject, setSelectedProject] = useState("");
+    const [selectedProject, setSelectedProject] = useState(null);
+
+    //task
+    const [newTask, setNewTask] = useState({});
 
     const dispatch = useDispatch();
     const user = useSelector(store => store.isUser.user);
     const projects = useSelector(store => store.isProjects);
+    const tasks = useSelector(store => store.isTasks);
 
     useEffect(() => {
         dispatch(fetchProjects(user.uid));
+        dispatch(fetchTasks(user.uid));
     },[dispatch, user.uid]);
 
+    //Project-related functions
     const inputHandler = (event) => {
         setProjectName(event.target.value);
     }
@@ -51,21 +57,53 @@ const Home = () => {
     const deleteProject = (projectId) => {
         Fire.firestore().collection('projects').doc(projectId).delete();
         dispatch(fetchProjects(user.uid));
+        //also have to delete all tasks related to this project
+    }
+
+    const selectProject = (selected) => {
+        setSelectedProject(selected);
+    }
+
+    //Task-related functions
+    const newTaskHandler = (event) => {
+        setNewTask({
+            ...newTask,
+            [event.target.name]: event.target.value,
+        })
     }
 
     const postTask = () => {
-
+        Fire
+        .firestore()
+        .collection('tasks')
+        .add({
+            projectId: newTask.projectId,
+            date: newTask.due,
+            task: newTask.taskName,
+            archived: false,
+            userId: user.uid,
+            priority: newTask.priority,
+        })
+        .then()
+        .catch(error => console.error("Error adding document: ", error))
+        setAddTask(false);
+        dispatch(fetchTasks(user.uid));
     }
 
-    const deleteTask = () => {
+    const changeTask = () => {
+        
+    }
 
+    const deleteTask = (taskId) => {
+        Fire.firestore().collection('tasks').doc(taskId).delete();
+        dispatch(fetchTasks(user.uid));
     }
 
     return (
         <div className="content">
             <div className="content__sidebar">
                 <p>Welcome, <b>{user&& user.email}</b></p>
-                <button className="btn btn--green" onClick={() => setNewTask(!newTask)}><FontAwesomeIcon icon={faPlus} /> Add new task</button>
+                <button className="btn btn--green" onClick={() => setAddTask(!addTask)}><FontAwesomeIcon icon={faPlus} /> Add new task</button>
                 <h3>Projects</h3>
                 <div className="content__sidebar__projects">
                     <div>
@@ -73,17 +111,32 @@ const Home = () => {
                         <LoadingSpinner />
                          : 
                          projects.projects.map((el) => {
-                             return <ProjectName name={el.projectName} docId={el.docId} delete={deleteProject}/>
-                         })}
+                             return <ProjectName 
+                                        name={el.projectName} 
+                                        docId={el.docId} 
+                                        delete={deleteProject} 
+                                        select={selectProject}
+                                    />
+                        })}
                     </div>
                 </div> 
                 <button className="btn btn--green" onClick={() => setNewProject(!newProject)}><FontAwesomeIcon icon={faFolderPlus} /> Add new project</button>
             </div>
             <div className="content__todos">
-                <h3><FontAwesomeIcon icon={faTasks} /> All your tasks</h3>
-                <TaskItem task="Borden afwassen" />
-                <TaskItem task="Kleren wassen" />
-                <TaskItem task="Schoonmaken" />
+                <h3><FontAwesomeIcon icon={faTasks} /> All your tasks for {selectedProject ?  `"${selectedProject}"` : "all projects"} <span>{tasks.tasks.length}</span></h3>
+                {tasks.isLoading ? 
+                    <LoadingSpinner />
+                    : 
+                    tasks.tasks.map((el) => {
+                    return <TaskItem 
+                                task={el.task} 
+                                taskId={el.docId} 
+                                date={el.date} 
+                                priority={el.priority} 
+                                project={el.projectId} 
+                                delete={deleteTask} 
+                            />
+                    })}
             </div>
 
             {newProject&&
@@ -100,25 +153,25 @@ const Home = () => {
                 </div>}
             </Modal>}
 
-            {newTask&&
-            <Modal title="Create new task" close={() => setNewTask(!newTask)}>
-                <b>Task: </b><input type="text" /><br />
+            {addTask&&
+            <Modal title="Create new task" close={() => setAddTask(!addTask)}>
+                <b>Task: </b><input type="text" name="taskName" onChange={newTaskHandler} /><br />
                 <b>For project:</b>
-                    <select>
+                    <select onChange={newTaskHandler} name="projectId">
                         {projects.projects.map((project) => {
                             return <option value={project.projectName}>{project.projectName}</option>
                         })}
                     </select><br />
                 <b>Priority:</b>
-                <select>
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
+                <select onChange={newTaskHandler} name="priority">
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
                 </select>
                 <br />
-                <b>Due by: <input type="date" name="due" /><br /></b>
-                <b>Description: </b><input type="text" /><br />
-                <button className="btn">Create task</button>
+                <b>Due by: <input type="date" name="due" onChange={newTaskHandler} /><br /></b>
+                <b>Description: </b><input type="text" name="description" onChange={newTaskHandler}/><br />
+                <button className="btn" onClick={postTask}>Create task</button>
             </Modal>}
         </div>
     );

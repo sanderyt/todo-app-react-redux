@@ -1,5 +1,6 @@
 import React from 'react';
-import CloseIcon from './CloseIcon';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 const Modal = (props) => {
     return (
@@ -9,8 +10,8 @@ const Modal = (props) => {
                     <div className="modal__header__title">
                         <h2>{props.title}</h2>
                     </div>
-                    <div className="modal__header_close" onClick={props.close}>
-                        <CloseIcon />
+                    <div className="modal__header__close" onClick={props.close}>
+                        <FontAwesomeIcon icon={faTimes} />
                     </div>
                 </div>
                 <div className="modal__content">

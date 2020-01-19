@@ -8,8 +8,6 @@ import Home from './pages/Home';
 import { connect } from 'react-redux';
 import { logOut, logIn, getUser, removeUser } from './redux/actions';
 
-import './App.scss';
-
 class App extends Component {
 
   authListener() {

@@ -8,7 +8,6 @@ import { useSelector } from 'react-redux';
 const Header = () => {
 
     const isLogged = useSelector(store => store.isLogged);
-    const userEmail = useSelector(store => store.isUser);
 
     const signOut = () => {
         Fire.auth().signOut();

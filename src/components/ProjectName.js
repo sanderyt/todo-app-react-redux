@@ -11,7 +11,7 @@ const ProjectName = (props) => {
         props.delete(projectId);
     }
     return (
-        <div className="project-name">
+        <div className="project-name" onClick={() => props.select(props.name)}>
             <div className="project-name__title">
             {props.name}
             </div>

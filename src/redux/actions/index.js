@@ -65,3 +65,43 @@ export const fetchProjects = (userid) => {
         })
     }
 }
+
+//Get tasks actions
+//Get project actions
+export const fetchTasksRequest = () => {
+    return {
+        type: 'FETCH_TASKS_REQUEST'
+    }
+}
+
+export const fetchTasksSuccess = (tasks) => {
+    return {
+        type: 'FETCH_TASKS_SUCCESS',
+        payload: tasks,
+    }
+}
+
+export const fetchTasksFailure = (error) => {
+    return {
+        type: 'FETCH_TASKS_FAILURE',
+        payload: error,
+    }
+}
+
+export const fetchTasks = (userid) => {
+    return async dispatch => {
+        dispatch(fetchTasksRequest())
+        
+        let tasks = []
+        Fire.firestore().collection('tasks').where("userId", "==", userid).get()
+        .then((snapshot) => {
+            snapshot.docs.forEach(doc => {
+                tasks.push({ ...doc.data(), docId: doc.id })
+            })
+        dispatch(fetchTasksSuccess(tasks))
+        })
+        .catch((error) => {
+            dispatch(fetchTasksFailure(error));
+        })
+    }
+}
