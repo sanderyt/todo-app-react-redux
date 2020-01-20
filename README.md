@@ -1,5 +1,3 @@
-@Emile: I did not do the BEM methodology for this one, will do this next commit. 
-
 Motivation to choose the techs
 ## React
 I have choosen React as front-end because I like to work with React, understand it well, in which I can develop the app way faster. Get a deep understanding of React, because of the high demand for React devs. React is scalable, because you make components once and can reuse them in your app, which makes development fast and your app maintainable. 
