@@ -3,12 +3,12 @@ const isUserReducer = (state = {}, action) => {
         case 'GET_USER':
             return {
                 ...state,
-                state : action.payload,
+                user : action.payload,
             }
         case "REMOVE_USER":
             return {
                 ...state,
-                state: null
+                user: null
             }
         default:
             return state;

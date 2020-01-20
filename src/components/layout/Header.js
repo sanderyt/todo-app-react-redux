@@ -5,8 +5,8 @@ import { useSelector } from 'react-redux';
 
 const Header = () => {
 
-    const isLogged = useSelector(state => state.isLogged);
-    const userEmail = useSelector(state => state.isUser);
+    const isLogged = useSelector(store => store.isLogged);
+    const userEmail = useSelector(store => store.isUser);
 
     const signOut = () => {
         Fire.auth().signOut();
@@ -19,7 +19,8 @@ const Header = () => {
             </div>
             {isLogged&&
             <div className="header__logout">
-                <p>Welcome, {userEmail.email}</p>
+                Search for task:<input type="text" /><button className="btn btn--logout">Search</button>
+                <button className="btn btn--logout"><i class="fas fa-sliders-h"></i> Settings</button>
                 <button onClick={signOut} className="btn btn--logout">Logout</button>
             </div>
             }
