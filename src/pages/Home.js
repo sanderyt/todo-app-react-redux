@@ -4,24 +4,33 @@ import Modal from '../components/Modal';
 import LoadingSpinner from '../components/LoadingSpinner';
 import TaskItem from '../components/TaskItem';
 import ProjectName from '../components/ProjectName';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faFolderPlus, faTasks } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchProjects } from '../redux/actions';
+import { fetchProjects, fetchTasks } from '../redux/actions';
 
 const Home = () => {
 
     const [newProject, setNewProject] = useState(false);
-    const [newTask, setNewTask] = useState(false);
+    const [addTask, setAddTask] = useState(false);
     const [addedProject, setAddedProject] = useState(false);
     const [projectName, setProjectName] = useState("");
+    const [selectedProject, setSelectedProject] = useState(null);
+
+    //task
+    const [newTask, setNewTask] = useState({});
 
     const dispatch = useDispatch();
     const user = useSelector(store => store.isUser.user);
     const projects = useSelector(store => store.isProjects);
+    const tasks = useSelector(store => store.isTasks);
 
     useEffect(() => {
         dispatch(fetchProjects(user.uid));
-    },[]);
+        dispatch(fetchTasks(user.uid));
+    },[dispatch, user.uid]);
 
+    //Project-related functions
     const inputHandler = (event) => {
         setProjectName(event.target.value);
     }
@@ -31,7 +40,7 @@ const Home = () => {
         setAddedProject(false)
     }
 
-    const postNewProject = () => {
+    const postProject = () => {
         Fire
         .firestore()
         .collection("projects")
@@ -39,21 +48,71 @@ const Home = () => {
             projectName: projectName,
             userId: user.uid,
         })
-        .then(() => console.log('succes'))
+        .then()
         .catch(error => console.error("Error adding document: ", error))
         setAddedProject(true)
         dispatch(fetchProjects(user.uid));
+    }
+
+    const deleteProject = (projectId) => {
+        Fire.firestore().collection('projects').doc(projectId).delete().then(() => {
+            dispatch(fetchProjects(user.uid));
+        })
+        .catch((error) => {
+            console.error("Error removing document: ", error);
+        })
+
+        //also have to delete all tasks related to this project
+    }
+
+    const selectProject = (selected) => {
+        setSelectedProject(selected);
+    }
+
+    //Task-related functions
+    const newTaskHandler = (event) => {
+        setNewTask({
+            ...newTask,
+            [event.target.name]: event.target.value,
+        })
+    }
+
+    const postTask = () => {
+        Fire
+        .firestore()
+        .collection('tasks')
+        .add({
+            projectId: newTask.projectId,
+            date: newTask.due,
+            task: newTask.taskName,
+            archived: false,
+            userId: user.uid,
+            priority: newTask.priority,
+        })
+        .then()
+        .catch(error => console.error("Error adding document: ", error))
+        setAddTask(false);
+        dispatch(fetchTasks(user.uid));
+    }
+
+    const changeTask = () => {
+        
+    }
+
+    const deleteTask = (taskId) => {
+        Fire.firestore().collection('tasks').doc(taskId).delete().then(() => {
+            dispatch(fetchTasks(user.uid));
+        })
+        .catch((error) => {
+            console.error("Error removing document: ", error);
+        })
     }
 
     return (
         <div className="content">
             <div className="content__sidebar">
                 <p>Welcome, <b>{user&& user.email}</b></p>
-                <h3>Filter tasks</h3>
-                <p>By priority:</p>
-                <p>By status:</p>
-                <p>By project:</p>
-                <button className="btn" onClick={() => setNewTask(!newTask)}>Add new task</button>
+                <button className="btn btn--green" onClick={() => setAddTask(!addTask)}><FontAwesomeIcon icon={faPlus} /> Add new task</button>
                 <h3>Projects</h3>
                 <div className="content__sidebar__projects">
                     <div>
@@ -61,17 +120,32 @@ const Home = () => {
                         <LoadingSpinner />
                          : 
                          projects.projects.map((el) => {
-                             return <ProjectName name={el.projectName} />
-                         })}
+                             return <ProjectName 
+                                        name={el.projectName} 
+                                        docId={el.docId} 
+                                        delete={deleteProject} 
+                                        select={selectProject}
+                                    />
+                        })}
                     </div>
                 </div> 
-                <button className="btn" onClick={() => setNewProject(!newProject)}>Add new project</button>
+                <button className="btn btn--green" onClick={() => setNewProject(!newProject)}><FontAwesomeIcon icon={faFolderPlus} /> Add new project</button>
             </div>
             <div className="content__todos">
-                <h3>All your tasks</h3>
-                <TaskItem task="Borden afwassen" />
-                <TaskItem task="Kleren wassen" />
-                <TaskItem task="Schoonmaken" />
+                <h3><FontAwesomeIcon icon={faTasks} /> All your tasks for {selectedProject ?  `"${selectedProject}"` : "all projects"} <span>{tasks.tasks.length}</span></h3>
+                {tasks.isLoading ? 
+                    <LoadingSpinner />
+                    : 
+                    tasks.tasks.map((el) => {
+                    return <TaskItem 
+                                task={el.task} 
+                                taskId={el.docId} 
+                                date={el.date} 
+                                priority={el.priority} 
+                                project={el.projectId} 
+                                delete={deleteTask} 
+                            />
+                    })}
             </div>
 
             {newProject&&
@@ -84,18 +158,29 @@ const Home = () => {
                 :
                 <div>
                 <b>Project name: </b><input type="text" onChange={inputHandler}/><br />
-                <button className="btn" onClick={postNewProject}>Create project</button>
+                <button className="btn" onClick={postProject}>Create project</button>
                 </div>}
             </Modal>}
 
-            {newTask&&
-            <Modal title="Create new task" close={() => setNewTask(!newTask)}>
-                <b>Task: </b><input type="text" /><br />
-                <b>For project: </b><input type="text" /><br />
-                <b>Priority:</b> <input type="text" /><br />
-                <b>Due by: <input type="text" /><br /></b>
-                <b>Description: </b><input type="text" /><br />
-                <button className="btn">Create task</button>
+            {addTask&&
+            <Modal title="Create new task" close={() => setAddTask(!addTask)}>
+                <b>Task: </b><input type="text" name="taskName" onChange={newTaskHandler} /><br />
+                <b>For project:</b>
+                    <select onChange={newTaskHandler} name="projectId">
+                        {projects.projects.map((project) => {
+                            return <option value={project.projectName}>{project.projectName}</option>
+                        })}
+                    </select><br />
+                <b>Priority:</b>
+                <select onChange={newTaskHandler} name="priority">
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                </select>
+                <br />
+                <b>Due by: <input type="date" name="due" onChange={newTaskHandler} /><br /></b>
+                <b>Description: </b><input type="text" name="description" onChange={newTaskHandler}/><br />
+                <button className="btn" onClick={postTask}>Create task</button>
             </Modal>}
         </div>
     );

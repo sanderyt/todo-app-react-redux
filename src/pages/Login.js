@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import Fire from '../config/Firebase';
 
-import Modal from './Modal';
-import LoadingSpinner from './LoadingSpinner';
+import Modal from '../components/Modal';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Login = ({clicked, register}) => {
 
